@@ -48,7 +48,8 @@ RUN apt-get update && \
     apt-get clean && \ 
     rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get install -y apt-utils \
+RUN apt-get update && apt-get install -y \
+    apt-utils \
     build-essential \
     gdm3 \
     glances \
@@ -65,17 +66,27 @@ RUN apt-get update && apt-get install -y apt-utils \
     tasksel \
     neovim \
     emacs \
+    \
     ripgrep \
     silversearcher-ag \
-    tmux \
     fzf \
+    \
+    tmux \
     zsh \
     pandoc \
     gopass \
     tj3 \
     python3-nwdiag \
     graphviz \
-    texlive \
+    \
+    texlive-xetex \
+    texlive-lang-german \
+    texlive-latex-extra \
+    texlive-metapost \
+    texlive-pictures \
+    texlive-pstricks \
+    texlive-science \
+    \
     r-base \
     r-cran-rsvg
 
@@ -113,6 +124,10 @@ RUN apt-get install -y libpam-fscrypt && \
     fscrypt setup --quiet --force && \
     echo "fscrypt setup /home/${USER_NAME}/protected --quiet && fscrypt encrypt /home/${USER_NAME}/protected" > /home/${USER_NAME}/protected_setup.sh && chmod 755  /home/${USER_NAME}/protected_setup.sh 
 
+# emacs pdf-tools (https://github.com/politza/pdf-tools) deps
+# org-roam (libsqlite3-dev) deps
+RUN apt-get install -y libpoppler-glib-dev libpoppler-private-dev libpng-dev zlib1g-dev libsqlite3-dev sqlite
+
 #######################################################################
 ## User Configuration
 # Sudo configuration
@@ -135,6 +150,7 @@ ENV PATH=$PATH:/opt/VirtualGL/bin/:/usr/local/go/bin
 ENV DISPLAY=:100
 
 WORKDIR /home/${USER_NAME}
+COPY README.md /home/${USER_NAME}/
 
 
 # add iRODS iCommands to user profile as JSON
