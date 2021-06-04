@@ -158,7 +158,39 @@ COPY README.md /home/${USER_NAME}/
 
 EXPOSE ${XPRA_PORT}
 
-CMD xpra start --bind-tcp=0.0.0.0:${XPRA_PORT} --attach=no --start=screen --html=on --exit-with-children=no --daemon=no --mdns=no --xvfb="/usr/bin/Xvfb +extension Composite -screen 0 1920x1080x24+32 -nolisten tcp -noreset" --pulseaudio=no --notifications=no --bell=no :100
-#CMD xpra start --bind-tcp=0.0.0.0:${XPRA_PORT} --html=on --start=gnome-terminal --exit-with-children=no --daemon=no --xvfb="/usr/bin/Xvfb +extension Composite -screen 0 1920x1080x24+32 -nolisten tcp -noreset" --pulseaudio=no --notifications=no --bell=no :100
-# CMD xpra start --bind-tcp=0.0.0.0:${XPRA_PORT} --html=on --exit-with-children=no --daemon=no --xvfb="/usr/bin/Xvfb +extension Composite -screen 0 1920x1080x24+32 -nolisten tcp -noreset" --pulseaudio=no --notifications=no --bell=no :100
+#works: CMD xpra start --bind-tcp=0.0.0.0:${XPRA_PORT} --attach=no --start=screen --html=on --exit-with-children=no --daemon=no --mdns=no --xvfb="/usr/bin/Xvfb +extension Composite -screen 0 1920x1080x24+32 -nolisten tcp -noreset" --pulseaudio=no --notifications=no --bell=no :100
 
+# --ssl-protocol=TLSv1_2 \
+CMD  openssl req -new \
+                 -x509 \
+		 -days 90 \
+		 -newkey rsa:4096 \
+		 -nodes \
+                 -subj "/C=DE/ST=NRW/L=Bonn/O=3130/OU=Jens Neuhalfen/CN=xpra" \
+		 -out /var/run/xpra/cert.pem \
+		 -keyout /var/run/xpra/key.pem \
+		 -sha256 && \
+		 \
+		 cat /var/run/xpra/key.pem /var/run/xpra/cert.pem > /var/run/xpra/ssl-cert.pem && \
+		 \
+               xpra start \
+	       \
+	       --bind-tcp=0.0.0.0:${XPRA_PORT} \
+	       \
+	       --ssl=tcp \
+               --ssl-ciphers=ECDHE-ECDSA-AES256-GCM-SHA384 \
+               --ssl-cert=/var/run/xpra/ssl-cert.pem \
+               --ssl-ca-certs=/var/run/xpra/cert.pem \
+               --ssl-key=/var/run/xpra/key.pem \
+	       \
+	       --attach=no \
+	       --start=screen \
+	       --html=off \
+	       --exit-with-children=no \
+	       --daemon=no \
+	       --mdns=no \
+	       --xvfb="/usr/bin/Xvfb +extension Composite -screen 0 1920x1080x24+32 -nolisten tcp -noreset" \
+	       --pulseaudio=no \
+	       --notifications=no \
+	       --bell=no \
+	       :100
