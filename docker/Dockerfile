@@ -161,14 +161,15 @@ EXPOSE ${XPRA_PORT}
 #works: CMD xpra start --bind-tcp=0.0.0.0:${XPRA_PORT} --attach=no --start=screen --html=on --exit-with-children=no --daemon=no --mdns=no --xvfb="/usr/bin/Xvfb +extension Composite -screen 0 1920x1080x24+32 -nolisten tcp -noreset" --pulseaudio=no --notifications=no --bell=no :100
 
 # --ssl-protocol=TLSv1_2 \
+# --ssl-ciphers=TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256 \
 CMD  openssl req -new \
                  -x509 \
 		 -days 90 \
 		 -newkey rsa:4096 \
 		 -nodes \
                  -subj "/C=DE/ST=NRW/L=Bonn/O=3130/OU=Jens Neuhalfen/CN=xpra" \
-		 -out /var/run/xpra/cert.pem \
-		 -keyout /var/run/xpra/key.pem \
+		 -out     /var/run/xpra/cert.pem \
+		 -keyout  /var/run/xpra/key.pem \
 		 -sha256 && \
 		 \
 		 cat /var/run/xpra/key.pem /var/run/xpra/cert.pem > /var/run/xpra/ssl-cert.pem && \
@@ -177,10 +178,10 @@ CMD  openssl req -new \
 	       \
 	       --bind-tcp=0.0.0.0:${XPRA_PORT} \
 	       \
-	       --ssl=tcp \
-               --ssl-ciphers=ECDHE-ECDSA-AES256-GCM-SHA384 \
-               --ssl-cert=/var/run/xpra/ssl-cert.pem \
-               --ssl-ca-certs=/var/run/xpra/cert.pem \
+	       --ssl=on \
+               --ssl-protocol=TLSv1_2 \
+               --ssl-ciphers=ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384  \
+               --ssl-cert=/var/run/xpra/cert.pem \
                --ssl-key=/var/run/xpra/key.pem \
 	       \
 	       --attach=no \

@@ -7,3 +7,11 @@ run:
 		-v ~/Documents:/home/user/Documents \
 		-v ~/.doom.d:/home/user/.doom.d \
 		xuxxux/xpra-work-env:0.0.1
+shell:
+	docker run -ti \
+		-v ${PWD}/home:/home/user \
+		-v ~/Documents:/home/user/Documents \
+		-v ~/.doom.d:/home/user/.doom.d \
+		xuxxux/xpra-work-env:0.0.1 \
+		/bin/bash
+
