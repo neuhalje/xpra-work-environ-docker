@@ -53,4 +53,18 @@ fscrypt lock protected
 
 # Use XPRA
 
-Use xpra control :10 start-child xterm   to start e.g. xterm or use the launcher 'start' in the GUI.
+Use `xpra control :10 start-child xterm`   to start e.g. xterm or use the launcher 'start' in the GUI.
+
+
+# SSL (TLS)
+This container is only reachable via TLS 1.2.
+
+The container uses the following certificates to protect TLS:
+
+```sh
+CERT_STORAGE=/run/xpra/pki
+CERT_FILE=${CERT_STORAGE}/cert.pem
+KEY_FILE=${CERT_STORAGE}/key.pem
+```
+
+The easiest way to provide them is to mount a volume there.  If this is not done, then a self signed certificate is generated.

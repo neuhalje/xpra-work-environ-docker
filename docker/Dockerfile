@@ -136,9 +136,9 @@ RUN apt-get install -y libpoppler-glib-dev libpoppler-private-dev libpng-dev zli
 ## User Configuration
 # Sudo configuration
 RUN mkdir -p /run/user/${UID}/xpra
-RUN mkdir -p /run/xpra
+RUN mkdir -p /run/xpra/pki
 RUN chown -R ${USER_NAME}:${USER_NAME} /run/user/${UID}
-RUN chown ${USER_NAME}:${USER_NAME} /run/xpra
+RUN chown -R ${USER_NAME}:${USER_NAME} /run/xpra
 
 RUN apt-get update && apt-get install -y sudo
 RUN usermod -aG sudo ${USER_NAME}
@@ -154,7 +154,7 @@ ENV PATH=$PATH:/opt/VirtualGL/bin/:/usr/local/go/bin
 ENV DISPLAY=:100
 
 WORKDIR /home/${USER_NAME}
-COPY README.md /home/${USER_NAME}/
+COPY README.md /run/user/${UID}/.
 
 
 # add iRODS iCommands to user profile as JSON
@@ -162,40 +162,6 @@ COPY README.md /home/${USER_NAME}/
 
 EXPOSE ${XPRA_PORT}
 
-#works: CMD xpra start --bind-tcp=0.0.0.0:${XPRA_PORT} --attach=no --start=screen --html=on --exit-with-children=no --daemon=no --mdns=no --xvfb="/usr/bin/Xvfb +extension Composite -screen 0 1920x1080x24+32 -nolisten tcp -noreset" --pulseaudio=no --notifications=no --bell=no :100
-
-# --ssl-protocol=TLSv1_2 \
-# --ssl-ciphers=TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256 \
-CMD  openssl req -new \
-                 -x509 \
-		 -days 90 \
-		 -newkey rsa:4096 \
-		 -nodes \
-                 -subj "/C=DE/ST=NRW/L=Bonn/O=3130/OU=Jens Neuhalfen/CN=xpra" \
-		 -out     /var/run/xpra/cert.pem \
-		 -keyout  /var/run/xpra/key.pem \
-		 -sha256 && \
-		 \
-		 cat /var/run/xpra/key.pem /var/run/xpra/cert.pem > /var/run/xpra/ssl-cert.pem && \
-		 \
-               xpra start \
-	       \
-	       --bind-ssl=0.0.0.0:${XPRA_PORT} \
-	       \
-	       --ssl=on \
-               --ssl-protocol=TLSv1_2 \
-               --ssl-ciphers=ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384  \
-               --ssl-cert=/var/run/xpra/cert.pem \
-               --ssl-key=/var/run/xpra/key.pem \
-	       \
-	       --attach=no \
-	       --start=screen \
-	       --html=off \
-	       --exit-with-children=no \
-	       --daemon=no \
-	       --mdns=no \
-	       --xvfb="/usr/bin/Xvfb +extension Composite -screen 0 1920x1080x24+32 -nolisten tcp -noreset" \
-	       --pulseaudio=no \
-	       --notifications=no \
-	       --bell=no \
-	       :100
+COPY start-xpra.sh /run/${UID}/
+#RUN chmod 700 /run/${UID}/start-xpra.sh
+CMD /run/${UID}/start-xpra.sh ${XPRA_PORT}
