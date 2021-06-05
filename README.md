@@ -1,8 +1,29 @@
 # Attaching
 
+## SSL / TLS
+
+### Recommended
+
+
+### UNSAFE: Ignore the certificate
 ```sh
-xpra attach ssl://127.0.0.1:9876 --ssl-server-verify-mode=none      --ssl-protocol=TLSv1_2  --start-child=gnome-terminal
+# Dangerous! This will do no certificate validation
+xpra attach ssl://127.0.0.1:9876 --ssl-server-verify-mode=none   --ssl-protocol=TLSv1_2  --start-child=gnome-terminal
 ```
+
+### Slightly better: Ignore host name validation
+```sh
+# Copy the cert file from the containers stdout into xpracert.pem
+xpra attach ssl://127.0.0.1:9876 --ssl-ca-certs=./xpracert.pem --ssl-check-hostname=no --ssl-protocol=TLSv1_2  --start-child=gnome-terminal 
+```
+
+TODO:
+- Pass hostname on start
+- USe the  hexlify https://github.com/Xpra-org/xpra/blob/master/docs/Network/SSL.md
+
+## Starting
+
+Use `xpra control :10 start-child xterm` to start e.g. xterm or use the launcher 'start' in the GUI.
 
 # ~ -- home directory
 
@@ -51,9 +72,7 @@ To *lock* the  `protected` folder:
 fscrypt lock protected
 ```
 
-# Use XPRA
 
-Use `xpra control :10 start-child xterm`   to start e.g. xterm or use the launcher 'start' in the GUI.
 
 
 # SSL (TLS)

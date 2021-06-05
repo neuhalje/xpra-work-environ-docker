@@ -52,5 +52,21 @@ start_xpra() {
 if ! [[  -f ${KEY_FILE} && -f ${CERT_FILE} ]]; then
 	generate_certificates
 fi
+
+printf '\nCertificates\n=========================================================================\n\nThis container used the following certificate:\n\n'
+cat "${CERT_FILE}"
+
+printf '\n\nOr use directly:
+
+xpra attach ssl:localhost:%d \\
+           --ssl-protocol=TLSv1_2 \\
+           --ssl-check-hostname=no \\
+	   --ssl-ca-data=%s \\
+	   --start-child=gnome-terminal\n' \
+  ${XPRA_PORT} \
+  $(xxd  -ps  "${CERT_FILE}"| tr -d '\n' )
+
+printf '\n\n=========================================================================\n'
+
 start_xpra
 
