@@ -6,6 +6,7 @@
 set -e
 
 XPRA_PORT=$1
+CERT_SAN="${CERT_SAN:-DNS:localhost,IP:127.0.0.1}"
 
 CERT_STORAGE=/run/xpra/pki
 CERT_FILE=${CERT_STORAGE}/cert.pem
@@ -20,6 +21,7 @@ generate_certificates() {
 			 -newkey rsa:4096 \
 			 -nodes \
 			 -subj "/C=DE/ST=NRW/L=Bonn/O=playground/OU=Jens Neuhalfen/CN=xpra" \
+                         -addext "subjectAltName = ${CERT_SAN}" \
 			 -out  "${CERT_FILE}"    \
 			 -keyout "${KEY_FILE}"  \
 			 -sha256

@@ -11,6 +11,7 @@ run:
 		-v ${PWD}/home:/home/user \
 		-v ~/Documents:/home/user/Documents \
 		-v ~/.doom.d:/home/user/.doom.d \
+		-e "CERT_SAN=DNS:localhost,IP:127.0.0.1,DNS:xpra.example.com" \
 		xuxxux/xpra-work-env:0.0.1
 shell:
 	docker run -ti \
