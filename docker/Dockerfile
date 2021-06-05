@@ -57,7 +57,6 @@ RUN apt-get update && apt-get install -y \
     gnome-shell \
     gnome-session \
     gnome-terminal \
-    htop \
     libqt5x11extras5 \
     linux-generic-hwe-20.04-edge \
     nautilus \
@@ -67,17 +66,21 @@ RUN apt-get update && apt-get install -y \
     neovim \
     emacs \
     \
+    fonts-firacode \
+    fonts-league-mono \
+    fonts-noto-mono \
+    \
+    fzf \
+    gopass \
+    graphviz \
+    htop \
+    pandoc \
+    python3-nwdiag \
     ripgrep \
     silversearcher-ag \
-    fzf \
-    \
+    tj3 \
     tmux \
     zsh \
-    pandoc \
-    gopass \
-    tj3 \
-    python3-nwdiag \
-    graphviz \
     \
     texlive-xetex \
     texlive-lang-german \
@@ -86,6 +89,7 @@ RUN apt-get update && apt-get install -y \
     texlive-pictures \
     texlive-pstricks \
     texlive-science \
+    texlive-fonts-extra \
     \
     r-base \
     r-cran-rsvg
@@ -176,7 +180,7 @@ CMD  openssl req -new \
 		 \
                xpra start \
 	       \
-	       --bind-tcp=0.0.0.0:${XPRA_PORT} \
+	       --bind-ssl=0.0.0.0:${XPRA_PORT} \
 	       \
 	       --ssl=on \
                --ssl-protocol=TLSv1_2 \

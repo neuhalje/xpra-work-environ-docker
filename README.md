@@ -1,3 +1,9 @@
+# Attaching
+
+```sh
+xpra attach ssl://127.0.0.1:9876 --ssl-server-verify-mode=none      --ssl-protocol=TLSv1_2  --start-child=gnome-terminal
+```
+
 # ~ -- home directory
 
 ## Setup the home directory
