@@ -82,6 +82,11 @@ RUN apt-get update && apt-get install -y \
     tmux \
     zsh \
     \
+    dnsutils \
+    httping \
+    iputils-ping \
+    nmap \
+    \
     texlive-xetex \
     texlive-lang-german \
     texlive-latex-extra \
@@ -119,6 +124,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
 
 RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificates \
     libglib2.0-0 libxext6 libsm6 libxrender1 \
+    screen \
     git subversion
 
 # fscrypt -- encrypt ~/protected
@@ -135,9 +141,11 @@ RUN apt-get install -y libpoppler-glib-dev libpoppler-private-dev libpng-dev zli
 #######################################################################
 ## User Configuration
 # Sudo configuration
-RUN mkdir -p /run/user/${UID}/xpra
-RUN mkdir -p /run/xpra/pki
-RUN chown -R ${USER_NAME}:${USER_NAME} /run/user/${UID}
+
+RUN umask 0077 && mkdir -p /run/user/${UID}/xpra
+RUN umask 0077 && mkdir -p /run/xpra/pki
+RUN chown -R ${USER_NAME}:${USER_NAME} /run/user/${UID} 
+# && chmod 700  /run/user/${UID}
 RUN chown -R ${USER_NAME}:${USER_NAME} /run/xpra
 
 RUN apt-get update && apt-get install -y sudo
@@ -156,12 +164,7 @@ ENV DISPLAY=:100
 WORKDIR /home/${USER_NAME}
 COPY README.md /run/user/${UID}/.
 
-
-# add iRODS iCommands to user profile as JSON
-#RUN mkdir /home/user/.irods && echo '{"irods_host": "data.cyverse.org", "irods_port": 1247, "irods_user_name": "$IPLANT_USER", "irods_zone_name": "iplant"}' | tee  > /home/user/.irods/irods_environment.json
-
 EXPOSE ${XPRA_PORT}
 
 COPY start-xpra.sh /run/${UID}/
-#RUN chmod 700 /run/${UID}/start-xpra.sh
 CMD /run/${UID}/start-xpra.sh ${XPRA_PORT}

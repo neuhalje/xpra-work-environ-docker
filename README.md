@@ -1,5 +1,27 @@
+# xpra-work-environ-docker
+
+This is my personal container for working with a standard environment:
+
+- Ubuntu based container
+- Easy to use SSL
+  - Generate self signed certificates with custom names (SAN)
+  - Starting the container prints out a one-liner that connects by validating the freshly generated certificate
+- Optionally encrypted home directory (this is mounted as a volume)
+- Easy authentication (for a single user...)
+
 # Attaching
 
+## Authentication
+
+A password can be passed in the  `XPRA_PASSWORD` environment variable. If no password is passed then a password is generated an written to the containers stdout.
+
+```sh
+export XPRA_PASSWORD=$(openssl rand -base64 32)
+
+docker run \
+   ...
+   -e XPRA_PASSWORD
+   ...
 ## SSL / TLS
 
 ### Recommended
@@ -31,10 +53,6 @@ xpra attach ssl://127.0.0.1:9876 --ssl-server-verify-mode=none   --ssl-protocol=
 # Copy the cert file from the containers stdout into xpracert.pem
 xpra attach ssl://127.0.0.1:9876 --ssl-ca-certs=./xpracert.pem --ssl-check-hostname=no --ssl-protocol=TLSv1_2  --start-child=gnome-terminal 
 ```
-
-TODO:
-- Pass hostname on start
-- USe the  hexlify https://github.com/Xpra-org/xpra/blob/master/docs/Network/SSL.md
 
 ## Starting
 

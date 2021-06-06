@@ -6,6 +6,15 @@
 set -e
 
 XPRA_PORT=$1
+
+if [ -z "${XPRA_PASSWORD}" ]; then
+	XPRA_PASSWORD=${XPRA_PASSWORD:-$(openssl rand -base64 32)}
+	printf '\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\nThe following password has been generated:\n\n\t%s\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n' "${XPRA_PASSWORD}"
+else
+	printf '\nUsing the password passed in XPRA_PASSWORD\n\n'
+fi
+export XPRA_PASSWORD
+
 CERT_SAN="${CERT_SAN:-DNS:localhost,IP:127.0.0.1}"
 
 CERT_STORAGE=/run/xpra/pki
@@ -30,7 +39,9 @@ generate_certificates() {
 start_xpra() {
                xpra start \
 	       \
-	       --bind-ssl=0.0.0.0:${XPRA_PORT} \
+	       --auth=fail \
+	       --ssl-auth=env \
+	       --bind-ssl=0.0.0.0:${XPRA_PORT},auth=env:name=XPRA_PASSWORD \
 	       \
 	       --ssl=on \
                --ssl-protocol=TLSv1_2 \
@@ -47,6 +58,7 @@ start_xpra() {
 	       --notifications=no \
 	       --pulseaudio=no \
 	       --start=screen \
+	       --webcam=no \
 	       --xvfb="/usr/bin/Xvfb +extension Composite -screen 0 1920x1080x24+32 -nolisten tcp -noreset" \
 	       :100
 }
@@ -62,7 +74,7 @@ printf '\n\nOr use directly:
 
 xpra attach ssl:localhost:%d \\
            --ssl-protocol=TLSv1_2 \\
-           --ssl-check-hostname=no \\
+           --ssl-check-hostname=yes \\
 	   --ssl-ca-data=%s \\
 	   --start-child=gnome-terminal\n' \
   ${XPRA_PORT} \
