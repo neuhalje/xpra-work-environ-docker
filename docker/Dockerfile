@@ -63,14 +63,19 @@ RUN apt-get update && apt-get install -y \
     seahorse-nautilus \
     software-properties-common \
     tasksel \
+    \
+    firefox \
+    \
     neovim \
     emacs \
     \
-    fonts-firacode \
     fonts-league-mono \
     fonts-noto-mono \
+    fonts-arkpandora \
+    fonts-powerline \
     \
     fzf \
+    gnuplot \
     gopass \
     graphviz \
     htop \
@@ -78,14 +83,20 @@ RUN apt-get update && apt-get install -y \
     python3-nwdiag \
     ripgrep \
     silversearcher-ag \
+    sysstat \
     tj3 \
     tmux \
     zsh \
     \
     dnsutils \
     httping \
+    iproute2 \
     iputils-ping \
+    net-tools \
     nmap \
+    openssh-server \
+    sshfs \
+    sslscan \
     \
     texlive-xetex \
     texlive-lang-german \
@@ -145,13 +156,15 @@ RUN apt-get install -y libpoppler-glib-dev libpoppler-private-dev libpng-dev zli
 RUN umask 0077 && mkdir -p /run/user/${UID}/xpra
 RUN umask 0077 && mkdir -p /run/xpra/pki
 RUN chown -R ${USER_NAME}:${USER_NAME} /run/user/${UID} 
-# && chmod 700  /run/user/${UID}
 RUN chown -R ${USER_NAME}:${USER_NAME} /run/xpra
 
 RUN apt-get update && apt-get install -y sudo
 RUN usermod -aG sudo ${USER_NAME}
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
+# Install various fonts
+COPY install-fonts.sh /run/user/${UID}/.
+RUN  chmod 555 /run/user/${UID}/install-fonts.sh
 
 USER ${USER_NAME}
 
@@ -163,6 +176,8 @@ ENV DISPLAY=:100
 
 WORKDIR /home/${USER_NAME}
 COPY README.md /run/user/${UID}/.
+
+RUN  /run/user/${UID}/install-fonts.sh
 
 EXPOSE ${XPRA_PORT}
 

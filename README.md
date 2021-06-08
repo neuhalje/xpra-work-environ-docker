@@ -20,7 +20,7 @@ export XPRA_PASSWORD=$(openssl rand -base64 32)
 
 docker run \
    ...
-   -e XPRA_PASSWORD
+   -e XPRA_PASSWORD \
    ...
 ## SSL / TLS
 

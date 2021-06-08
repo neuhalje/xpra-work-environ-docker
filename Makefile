@@ -9,7 +9,7 @@ base-image:
 	docker pull ubuntu:hirsute
 
 run:
-	docker run -p 127.0.0.1:9876:9876 \
+	docker run --rm -p 127.0.0.1:9876:9876 \
 		-v ${PWD}/home:/home/user \
 		-v ~/Documents:/home/user/Documents \
 		-v ~/.doom.d:/home/user/.doom.d \
@@ -17,7 +17,7 @@ run:
 		-e XPRA_PASSWORD \
 		xuxxux/xpra-work-env:${DOCKER-IMAGE-VERSION}
 shell:
-	docker run -ti \
+	docker run --rm -ti \
 		-v ${PWD}/home:/home/user \
 		-v ~/Documents:/home/user/Documents \
 		-v ~/.doom.d:/home/user/.doom.d \
@@ -27,4 +27,5 @@ shell:
 .PHONY: push
 push: build
 	docker tag xuxxux/xpra-work-env:${DOCKER-IMAGE-VERSION} xuxxux/xpra-work-env:latest
-	docker push xuxxux/xpra-work-env:${DOCKER-IMAGE-VERSION} xuxxux/xpra-work-env:latest
+	docker push xuxxux/xpra-work-env:${DOCKER-IMAGE-VERSION}
+	docker push xuxxux/xpra-work-env:latest
