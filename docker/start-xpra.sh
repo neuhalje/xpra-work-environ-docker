@@ -53,11 +53,12 @@ start_xpra() {
 	       --bell=no \
 	       --daemon=no \
 	       --exit-with-children=no \
+	       --file-transfer=on \
 	       --html=off \
 	       --mdns=no \
 	       --notifications=no \
 	       --pulseaudio=no \
-	       --start=screen \
+	       --start=/usr/bin/screen \
 	       --webcam=no \
 	       --xvfb="/usr/bin/Xvfb +extension Composite -screen 0 1920x1080x24+32 -nolisten tcp -noreset" \
 	       :100
