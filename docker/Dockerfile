@@ -192,6 +192,11 @@ RUN apt-get install -y libpam-fscrypt && \
 # org-roam (libsqlite3-dev) deps
 RUN apt-get install -y libpoppler-glib-dev libpoppler-private-dev libpng-dev zlib1g-dev libsqlite3-dev sqlite
 
+# Signal
+RUN wget -O- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > /usr/share/keyrings/signal-desktop-keyring.gpg &&
+          echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt xenial main' > /etc/apt/sources.list.d/signal-xenial.list &&
+          apt update && sudo apt install signal-desktop
+
 #######################################################################
 ## User Configuration
 # Sudo configuration
