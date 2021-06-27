@@ -64,6 +64,9 @@ RUN apt-get update && apt-get install -y \
     software-properties-common \
     tasksel \
     \
+    aspell \
+    aspell-de \
+    \
     firefox \
     \
     neovim \
