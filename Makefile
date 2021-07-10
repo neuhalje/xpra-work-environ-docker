@@ -1,4 +1,4 @@
-DOCKER-IMAGE-VERSION = 0.0.2
+DOCKER-IMAGE-VERSION = 0.0.3
 
 .PHONY: build
 build: base-image
