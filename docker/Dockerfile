@@ -26,13 +26,12 @@ RUN apt-get update && \
     wget -O - https://xpra.org/gpg.asc | apt-key add - && \
     echo "deb https://xpra.org/ hirsute main" > /etc/apt/sources.list.d/xpra.list
 
-RUN apt-get update && \
-    apt-get install -y xpra \
-    xvfb \
-    xterm \
-    sshfs && \
-    apt-get clean && \ 
-    rm -rf /var/lib/apt/lists/*
+#RUN apt-get update && \
+#    apt-get dist-upgrade && \
+#    apt-get install -y \
+    # && \
+    #apt-get clean && \ 
+    #rm -rf /var/lib/apt/lists/*
 
 RUN apt-key list
     
@@ -42,88 +41,89 @@ RUN apt-get update && apt-get install -y sudo
 RUN usermod -aG sudo ${USER_NAME}
 RUN echo 'ALL ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-# install all X apps here
-RUN apt-get update && \
+RUN apt-get update &&  \
     DEBIAN_FRONTEND=noninteractive && \
-    apt-get clean && \ 
-    rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update && apt-get install -y \
-    apt-utils \
-    build-essential \
-    gdm3 \
-    glances \
-    glmark2 \
-    gnome-shell \
-    gnome-session \
-    gnome-terminal \
-    libqt5x11extras5 \
-    linux-generic-hwe-20.04-edge \
-    nautilus \
-    seahorse-nautilus \
-    software-properties-common \
-    tasksel \
-    curl \
-    \
-    aspell \
-    aspell-de \
-    \
-    firefox \
-    \
-    neovim \
-    emacs \
-    \
-    fonts-league-mono \
-    fonts-noto-mono \
-    fonts-arkpandora \
-    fonts-powerline \
-    \
-    fzf \
-    gnuplot \
-    gopass \
-    graphviz \
-    htop \
-    pandoc \
-    ripgrep \
-    silversearcher-ag \
-    sysstat \
-    tj3 \
-    tmux \
-    zsh \
-    \
-    dnsutils \
-    httping \
-    iproute2 \
-    iputils-ping \
-    net-tools \
-    nmap \
-    openssh-server \
-    sshfs \
-    sslscan \
-    \
-    texlive-xetex \
-    texlive-lang-german \
-    texlive-latex-extra \
-    texlive-metapost \
-    texlive-pictures \
-    texlive-pstricks \
-    texlive-science \
-    texlive-fonts-extra \
-    latexdiff \
-    biber \
-    inkscape \
-    \
-    evince \
-    \
-    r-base \
-    r-cran-rsvg \
-    libxml2-dev \
-    libcurl4-openssl-dev \
-    libssl-dev \
-    \
-    python3-pip\
-    python3-nwdiag
-
+    apt-get install -y \
+	    apt-utils \
+	    build-essential \
+	    gdm3 \
+	    glances \
+	    glmark2 \
+	    gnome-shell \
+	    gnome-session \
+	    gnome-terminal \
+	    libqt5x11extras5 \
+	    linux-generic-hwe-20.04-edge \
+	    nautilus \
+	    seahorse-nautilus \
+	    software-properties-common \
+	    tasksel \
+	    curl \
+	    \
+	    xpra  \
+	    xvfb  \
+	    xterm  \
+	    sshfs  \
+	    \
+	    aspell \
+	    aspell-de \
+	    \
+	    firefox \
+	    \
+	    neovim \
+	    emacs \
+	    \
+	    fonts-league-mono \
+	    fonts-noto-mono \
+	    fonts-arkpandora \
+	    fonts-powerline \
+	    \
+	    fzf \
+	    gnuplot \
+	    gopass \
+	    graphviz \
+	    htop \
+	    pandoc \
+	    ripgrep \
+	    silversearcher-ag \
+	    sysstat \
+	    tj3 \
+	    tmux \
+	    zsh \
+	    \
+	    dnsutils \
+	    httping \
+	    iproute2 \
+	    iputils-ping \
+	    net-tools \
+	    nmap \
+	    openssh-server \
+	    sshfs \
+	    sslscan \
+	    \
+	    texlive-xetex \
+	    texlive-lang-german \
+	    texlive-latex-extra \
+	    texlive-metapost \
+	    texlive-pictures \
+	    texlive-pstricks \
+	    texlive-science \
+	    texlive-fonts-extra \
+	    latexdiff \
+	    biber \
+	    inkscape \
+	    \
+	    evince \
+	    \
+	    r-base \
+	    r-cran-rsvg \
+	    libxml2-dev \
+	    libcurl4-openssl-dev \
+	    libssl-dev \
+	    \
+	    python3-pip\
+	    python3-nwdiag && \
+    apt-get clean
 
 RUN echo "LANG=en_US.UTF-8" >> /etc/locale.conf
 
@@ -206,14 +206,9 @@ RUN apt-get install -y libpam-fscrypt && \
 RUN apt-get install -y libpoppler-glib-dev libpoppler-private-dev libpng-dev zlib1g-dev libsqlite3-dev sqlite
 
 # Signal
-RUN wget -O- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > /usr/share/keyrings/signal-desktop-keyring.gpg &&
-          echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt xenial main' > /etc/apt/sources.list.d/signal-xenial.list &&
+RUN wget -O- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > /usr/share/keyrings/signal-desktop-keyring.gpg && \
+          echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt xenial main' > /etc/apt/sources.list.d/signal-xenial.list && \
           apt update && sudo apt install signal-desktop
-
-# Signal
-RUN wget -O- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > /usr/share/keyrings/signal-desktop-keyring.gpg &&
-    echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt xenial main' >/etc/apt/sources.list.d/signal-xenial.list &&
-    sudo apt update && sudo apt install signal-desktop 
 
 #######################################################################
 ## User Configuration
