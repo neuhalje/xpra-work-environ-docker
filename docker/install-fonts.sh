@@ -60,7 +60,6 @@ echo "Setting default fonts "
 gsettings set org.gnome.desktop.interface document-font-name 'Fira Sans Regular 11'
 gsettings set org.gnome.desktop.interface font-name 'Fira Sans Regular 10'
 gsettings set org.gnome.desktop.interface monospace-font-name 'Fira Code Regular 12'
-gsettings set org.gnome.nautilus.desktop font 'Fira Sans Regular 10'
 gsettings set org.gnome.desktop.interface text-scaling-factor '1'
 
 echo "Done"

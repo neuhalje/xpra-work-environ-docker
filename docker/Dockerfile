@@ -63,6 +63,7 @@ RUN apt-get update && apt-get install -y \
     seahorse-nautilus \
     software-properties-common \
     tasksel \
+    curl \
     \
     aspell \
     aspell-de \
