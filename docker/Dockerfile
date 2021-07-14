@@ -112,6 +112,7 @@ RUN apt-get update &&  \
 	    latexdiff \
 	    biber \
 	    inkscape \
+	    latexmk \
 	    \
 	    evince \
 	    \

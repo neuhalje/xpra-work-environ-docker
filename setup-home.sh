@@ -33,6 +33,7 @@ echo '
  install.packages("dplyr", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")
  install.packages("ggthemes", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")
  install.packages("ggplot2", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")
+ install.packages("ggalluvial", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")
  install.packages("tidyverse", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")
  install.packages("pivottabler", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")
 
