@@ -31,11 +31,15 @@ echo '
  install.packages("utf8", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")
  install.packages("ascii", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")
  install.packages("dplyr", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")
- install.packages("ggthemes", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")
  install.packages("ggplot2", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")
  install.packages("ggalluvial", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")
  install.packages("tidyverse", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")
  install.packages("pivottabler", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")
+
+ install.packages("paletteer", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")
+ install.packages("ggsci", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")
+ install.packages("ggthemes", dependencies = TRUE, lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")
+ install.packages("viridis", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")
 
 update.packages(ask = FALSE, lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.rstudio.com/")
 ' | R --no-save
