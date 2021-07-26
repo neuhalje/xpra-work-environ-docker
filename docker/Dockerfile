@@ -110,6 +110,7 @@ RUN apt-get update &&  \
 	    texlive-science \
 	    texlive-fonts-extra \
 	    latexdiff \
+	    dvipng \
 	    biber \
 	    inkscape \
 	    latexmk \
