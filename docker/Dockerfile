@@ -1,4 +1,4 @@
-FROM ubuntu:hirsute
+FROM ubuntu:kinetic
 
 # Build-time metadata as defined at http://label-schema.org
 ARG BUILD_DATE
@@ -15,7 +15,6 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.schema-version="1.0.0"
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV golang_version=1.16.5
 ENV UID=1000
 ENV USER_NAME=user
 ENV XPRA_PORT=9876
@@ -24,7 +23,7 @@ ENV XPRA_PORT=9876
 RUN apt-get update && \
     apt-get install -y wget gnupg2 apt-transport-https && \
     wget -O - https://xpra.org/gpg.asc | apt-key add - && \
-    echo "deb https://xpra.org/ hirsute main" > /etc/apt/sources.list.d/xpra.list
+    echo "deb https://xpra.org/ kinetic main" > /etc/apt/sources.list.d/xpra.list
 
 #RUN apt-get update && \
 #    apt-get dist-upgrade && \
@@ -43,6 +42,12 @@ RUN echo 'ALL ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 RUN apt-get update &&  \
     DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y software-properties-common
+
+RUN apt remove --autoremove emacs emacs-common && \
+    /usr/bin/add-apt-repository ppa:ubuntu-elisp/ppa
+
+RUN DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y \
 	    apt-utils \
 	    build-essential \
@@ -53,9 +58,8 @@ RUN apt-get update &&  \
 	    gnome-session \
 	    gnome-terminal \
 	    libqt5x11extras5 \
-	    linux-generic-hwe-20.04-edge \
+	    linux-generic-hwe-22.04-edge \
 	    nautilus \
-	    seahorse-nautilus \
 	    software-properties-common \
 	    tasksel \
 	    curl \
@@ -68,10 +72,9 @@ RUN apt-get update &&  \
 	    aspell \
 	    aspell-de \
 	    \
-	    firefox \
-	    \
 	    neovim \
-	    emacs \
+        \
+        emacs-snapshot \
 	    \
 	    fonts-league-mono \
 	    fonts-noto-mono \
@@ -129,52 +132,6 @@ RUN apt-get update &&  \
 
 RUN echo "LANG=en_US.UTF-8" >> /etc/locale.conf
 
-# Install Go
-RUN wget -c https://dl.google.com/go/go${golang_version}.linux-amd64.tar.gz -O - | sudo tar -xz -C /usr/local
-
-# Install Adopt OpenJDK
-# Code from https://github.com/AdoptOpenJDK/openjdk-docker/blob/master/16/jdk/ubuntu/Dockerfile.hotspot.releases.full
-ENV JAVA_VERSION jdk-16.0.1+9
-
-RUN set -eux; \
-    ARCH="$(dpkg --print-architecture)"; \
-    case "${ARCH}" in \
-       aarch64|arm64) \
-         ESUM='3447ec27a6dbd4f3a6180a0d4371bb09aa428c16eea9983e515a7400cc9f5c85'; \
-         BINARY_URL='https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jdk_aarch64_linux_hotspot_16.0.1_9.tar.gz'; \
-         ;; \
-       armhf|armv7l) \
-         ESUM='20fc395d8ea2659e6407cd4ec233dc4399f61b7610f3a16495deb23c1e3b81df'; \
-         BINARY_URL='https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jdk_arm_linux_hotspot_16.0.1_9.tar.gz'; \
-         ;; \
-       ppc64el|ppc64le) \
-         ESUM='8d8e35ca5a7e24f16384bf32b110562921c19b4cfe65969980937bf879462bc6'; \
-         BINARY_URL='https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jdk_ppc64le_linux_hotspot_16.0.1_9.tar.gz'; \
-         ;; \
-       s390x) \
-         ESUM='421cd44661cdbf0c2da79ab3104c81a1fa171b974038e55b1b3d4a042865588f'; \
-         BINARY_URL='https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jdk_s390x_linux_hotspot_16.0.1_9.tar.gz'; \
-         ;; \
-       amd64|x86_64) \
-         ESUM='7fdda042207efcedd30cd76d6295ed56b9c2e248cb3682c50898a560d4aa1c6f'; \
-         BINARY_URL='https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jdk_x64_linux_hotspot_16.0.1_9.tar.gz'; \
-         ;; \
-       *) \
-         echo "Unsupported arch: ${ARCH}"; \
-         exit 1; \
-         ;; \
-    esac; \
-    curl -LfsSo /tmp/openjdk.tar.gz ${BINARY_URL}; \
-    echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
-    mkdir -p /opt/java/openjdk; \
-    cd /opt/java/openjdk; \
-    tar -xf /tmp/openjdk.tar.gz --strip-components=1; \
-    rm -rf /tmp/openjdk.tar.gz;
-
-ENV JAVA_HOME=/opt/java/openjdk \
-    PATH="/opt/java/openjdk/bin:$PATH"
-
-###### ~OpenJDK
 
 RUN apt-get install -y language-pack-en-base && \ 
     locale-gen en_US.UTF-8 && \ 
@@ -197,20 +154,20 @@ RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificate
     git subversion
 
 # fscrypt -- encrypt ~/protected
-RUN apt-get install -y libpam-fscrypt && \
-    mkdir /home/${USER_NAME}/protected && \
-    chown ${USER_NAME}:${USER_NAME} /home/${USER_NAME}/protected && \
-    fscrypt setup --quiet --force && \
-    echo "fscrypt setup /home/${USER_NAME}/protected --quiet && fscrypt encrypt /home/${USER_NAME}/protected" > /home/${USER_NAME}/protected_setup.sh && chmod 755  /home/${USER_NAME}/protected_setup.sh 
+#RUN apt-get install -y libpam-fscrypt && \
+#    mkdir /home/${USER_NAME}/protected && \
+#    chown ${USER_NAME}:${USER_NAME} /home/${USER_NAME}/protected && \
+#    fscrypt setup --quiet --force && \
+#    echo "fscrypt setup /home/${USER_NAME}/protected --quiet && fscrypt encrypt /home/${USER_NAME}/protected" > /home/${USER_NAME}/protected_setup.sh && chmod 755  /home/${USER_NAME}/protected_setup.sh
 
 # emacs pdf-tools (https://github.com/politza/pdf-tools) deps
 # org-roam (libsqlite3-dev) deps
 RUN apt-get install -y libpoppler-glib-dev libpoppler-private-dev libpng-dev zlib1g-dev libsqlite3-dev sqlite
 
 # Signal
-RUN wget -O- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > /usr/share/keyrings/signal-desktop-keyring.gpg && \
-          echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt xenial main' > /etc/apt/sources.list.d/signal-xenial.list && \
-          apt update && sudo apt install signal-desktop
+#RUN wget -O- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > /usr/share/keyrings/signal-desktop-keyring.gpg && \
+#          echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt xenial main' > /etc/apt/sources.list.d/signal-xenial.list && \
+#          apt update && sudo apt install signal-desktop
 
 #######################################################################
 ## User Configuration
@@ -232,9 +189,6 @@ RUN  chmod 555 /run/user/${UID}/install-fonts.sh
 USER ${USER_NAME}
 
     
-# set path for Go
-ENV PATH=$PATH:/opt/VirtualGL/bin/:/usr/local/go/bin 
-
 ENV DISPLAY=:100
 
 WORKDIR /home/${USER_NAME}

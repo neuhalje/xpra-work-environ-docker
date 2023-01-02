@@ -1,4 +1,4 @@
-DOCKER-IMAGE-VERSION = 0.0.3
+DOCKER-IMAGE-VERSION = 0.0.4
 
 .PHONY: build
 build: base-image
@@ -6,7 +6,7 @@ build: base-image
 
 .PHONY: base-image
 base-image:
-	docker pull ubuntu:hirsute
+	docker pull ubuntu:kinetic
 
 run:
 	docker run --rm -p 127.0.0.1:9876:9876 \
