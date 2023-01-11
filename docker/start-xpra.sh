@@ -5,83 +5,114 @@
 
 set -e
 
+# TLS currently fails with  an error indicating that
+# "ssl-cert" needs to be used (but it already is)
+USE_TLS=0
+
+#
+# fix Brotli compression error
+export XPRA_MIN_CLIPBOARD_COMPRESS_SIZE=99999999
+
 XPRA_PORT=$1
 
 if [ -z "${XPRA_PASSWORD}" ]; then
-	XPRA_PASSWORD=${XPRA_PASSWORD:-$(openssl rand -base64 32)}
-	printf '\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\nThe following password has been generated:\n\n\t%s\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n' "${XPRA_PASSWORD}"
+    XPRA_PASSWORD=${XPRA_PASSWORD:-$(openssl rand -base64 32)}
+    printf '\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\nThe following password has been generated:\n\n\t%s\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n' "${XPRA_PASSWORD}"
 else
-	printf '\nUsing the password passed in XPRA_PASSWORD\n\n'
+    printf '\nUsing the password passed in XPRA_PASSWORD\n\n'
 fi
 export XPRA_PASSWORD
 
+# TLS only
 CERT_SAN="${CERT_SAN:-DNS:localhost,IP:127.0.0.1}"
-
 CERT_STORAGE=/run/xpra/pki
 CERT_FILE=${CERT_STORAGE}/cert.pem
 KEY_FILE=${CERT_STORAGE}/key.pem
 
 generate_certificates() {
-	[ -d ${CERT_STORAGE} ] || mkdir -p ${CERT_STORAGE}
-	chmod 700 ${CERT_STORAGE}
-	openssl req -new \
-			 -x509 \
-			 -days 90 \
-			 -newkey rsa:4096 \
-			 -nodes \
-			 -subj "/C=DE/ST=NRW/L=Bonn/O=playground/OU=Jens Neuhalfen/CN=xpra" \
-                         -addext "subjectAltName = ${CERT_SAN}" \
-			 -out  "${CERT_FILE}"    \
-			 -keyout "${KEY_FILE}"  \
-			 -sha256
+    [ -d ${CERT_STORAGE} ] || mkdir -p ${CERT_STORAGE}
+    chmod 700 ${CERT_STORAGE}
+    openssl req -new \
+        -x509 \
+        -days 90 \
+        -newkey rsa:4096 \
+        -nodes \
+        -subj "/C=DE/ST=NRW/L=Bonn/O=playground/OU=Jens Neuhalfen/CN=xpra" \
+        -addext "subjectAltName = ${CERT_SAN}" \
+        -out "${CERT_FILE}" \
+        -keyout "${KEY_FILE}" \
+        -sha256
 }
 
-start_xpra() {
-               xpra start \
-	       \
-	       --auth=fail \
-	       --ssl-auth=env \
-	       --bind-ssl=0.0.0.0:${XPRA_PORT},auth=env:name=XPRA_PASSWORD \
-	       \
-	       --ssl=on \
-               --ssl-protocol=TLSv1_2 \
-               --ssl-ciphers=ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384  \
-               --ssl-cert="${CERT_FILE}" \
-               --ssl-key="${KEY_FILE}" \
-	       \
-	       --attach=no \
-	       --bell=no \
-	       --daemon=no \
-	       --exit-with-children=no \
-	       --file-transfer=on \
-	       --html=off \
-	       --mdns=no \
-	       --notifications=no \
-	       --pulseaudio=no \
-	       --start=/usr/bin/screen \
-	       --webcam=no \
-	       --xvfb="/usr/bin/Xvfb +extension Composite -screen 0 1920x1080x24+32 -nolisten tcp -noreset" \
-	       :100
+start_xpra_tls() {
+    xpra start \
+        --attach=no \
+        --auth=fail \
+        --bell=no \
+        --bind-ssl=0.0.0.0:${XPRA_PORT},auth=env:name=XPRA_PASSWORD \
+        --clipboard-direction=both \
+        --clipboard=auto \
+        --daemon=no \
+        --exit-with-children=no \
+        --file-transfer=on \
+        --html=off \
+        --mdns=no \
+        --notifications=no \
+        --pulseaudio=no \
+        --ssl-auth=env \
+        --ssl-cert="${CERT_FILE}" \
+        --ssl-ciphers=ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384 \
+        --ssl-key="${KEY_FILE}" \
+        --ssl-protocol=TLSv1_2 \
+        --ssl=on \
+        --start=/usr/bin/screen \
+        --webcam=no \
+        :100
 }
 
-if ! [[  -f ${KEY_FILE} && -f ${CERT_FILE} ]]; then
-	generate_certificates
+start_xpra_tcp() {
+    xpra start \
+        --auth=env \
+        --attach=no \
+        --bell=no \
+        --bind-tcp=0.0.0.0:${XPRA_PORT},auth=env:name=XPRA_PASSWORD \
+        --clipboard-direction=both \
+        --clipboard=auto \
+        --daemon=no \
+        --exit-with-children=no \
+        --file-transfer=on \
+        --html=off \
+        --mdns=no \
+        --notifications=no \
+        --pulseaudio=no \
+        --start=/usr/bin/screen \
+        --webcam=no \
+        :100
+}
+
+if [ $USE_TLS -gt 0 ]; then
+    if ! [[ -f ${key_file} && -f ${cert_file} ]]; then
+        generate_certificates
+    fi
+
+    printf '\ncertificates\n=========================================================================\n\nthis container used the following certificate:\n\n'
+    cat "${cert_file}"
+
+    printf '\n\nor use directly:
+
+    xpra attach ssl:localhost:%d \\
+        --ssl-protocol=tlsv1_2 \\
+        --ssl-check-hostname=yes \\
+        --ssl-ca-data=%s \\
+        --start-child=gnome-terminal\n' ${XPRA_PORT} "$(xxd -ps "${cert_file}" | tr -d '\n')"
+
+    printf '\n\n=========================================================================\n'
+
+    start_xpra_tls
+else
+    printf 'Now run the client:
+
+    xpra attach tcp:localhost:%d \\
+        --start-child=gnome-terminal\n' ${XPRA_PORT}
+    start_xpra_tcp
 fi
-
-printf '\nCertificates\n=========================================================================\n\nThis container used the following certificate:\n\n'
-cat "${CERT_FILE}"
-
-printf '\n\nOr use directly:
-
-xpra attach ssl:localhost:%d \\
-           --ssl-protocol=TLSv1_2 \\
-           --ssl-check-hostname=yes \\
-	   --ssl-ca-data=%s \\
-	   --start-child=gnome-terminal\n' \
-  ${XPRA_PORT} \
-  $(xxd  -ps  "${CERT_FILE}"| tr -d '\n' )
-
-printf '\n\n=========================================================================\n'
-
-start_xpra
-

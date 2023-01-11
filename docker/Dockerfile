@@ -40,41 +40,37 @@ RUN apt-get update && apt-get install -y sudo
 RUN usermod -aG sudo ${USER_NAME}
 RUN echo 'ALL ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-RUN apt-get update &&  \
-    DEBIAN_FRONTEND=noninteractive && \
-    apt-get install -y software-properties-common
-
-RUN apt remove --autoremove emacs emacs-common && \
-    /usr/bin/add-apt-repository ppa:ubuntu-elisp/ppa
-
 RUN DEBIAN_FRONTEND=noninteractive && \
+    apt update  && \
     apt-get install -y \
+        rsync \
 	    apt-utils \
-	    build-essential \
+	    software-properties-common \
+	    curl \
+        \
 	    gdm3 \
 	    glances \
 	    glmark2 \
+	    linux-generic-hwe-22.04-edge \
 	    gnome-shell \
 	    gnome-session \
 	    gnome-terminal \
 	    libqt5x11extras5 \
-	    linux-generic-hwe-22.04-edge \
 	    nautilus \
-	    software-properties-common \
 	    tasksel \
-	    curl \
 	    \
 	    xpra  \
 	    xvfb  \
+        xsel \
+        xclip \
 	    xterm  \
 	    sshfs  \
 	    \
 	    aspell \
 	    aspell-de \
+	    aspell-en \
 	    \
 	    neovim \
-        \
-        emacs-snapshot \
 	    \
 	    fonts-league-mono \
 	    fonts-noto-mono \
@@ -125,9 +121,20 @@ RUN DEBIAN_FRONTEND=noninteractive && \
 	    libxml2-dev \
 	    libcurl4-openssl-dev \
 	    libssl-dev \
+        \
+        cmake \
+        build-essential \
+        libtool-bin\
 	    \
 	    python3-pip\
-	    python3-nwdiag && \
+	    python3-nwdiag
+
+RUN apt-get update &&  \
+    DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y software-properties-common && \
+    apt remove --autoremove emacs emacs-common && \
+    /usr/bin/add-apt-repository ppa:neuhalje/emacs-stable && \
+     DEBIAN_FRONTEND=noninteractive apt-get install -y emacs29 && \
     apt-get clean
 
 RUN echo "LANG=en_US.UTF-8" >> /etc/locale.conf

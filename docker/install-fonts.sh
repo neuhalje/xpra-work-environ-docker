@@ -16,16 +16,19 @@ if [[ $? -ne 0 ]]; then
         sudo apt update && sudo apt install unzip -y
 fi
 
-for f in Roboto "Noto%20Sans" "Open%20Sans" "Source%20Sans%20Pro" "Source%20Code%20Pro" "Roboto%20Mono" "Roboto%20Condensed" "Roboto" "Fira%20Sans" "Fira%20Sans%20Condensed" "Fira%Mono" "Fira%20Code"; do
-        wget -O fonts.zip "https://fonts.google.com/download?family=${f}"
+mkdir /tmp/nej-fonts
 
-        mkdir /tmp/nej-fonts
+for f in Roboto "Noto%20Sans" "Open%20Sans" "Source%20Sans%20Pro" "Source%20Code%20Pro" "Roboto%20Mono" "Roboto%20Condensed" "Roboto" "Fira%20Sans" "Fira%20Sans%20Condensed" "Fira%20Mono" "Fira%20Code"; do
+        wget -O fonts.zip "https://fonts.google.com/download?family=${f}"
+        # remove info files in root folders
+        sudo find /tmp/nej-fonts -maxdepth 1 -type f -delete
         sudo unzip fonts.zip -d /tmp/nej-fonts
         rm fonts.zip
 done
 
 # https://github.com/tonsky/FiraCode/
 wget -O firacode.zip "https://github.com/tonsky/FiraCode/releases/download/6.2/Fira_Code_v6.2.zip"
+sudo find /tmp/nej-fonts -maxdepth 1 -type f -delete
 sudo unzip firacode.zip -d /tmp/nej-fonts
 rm firacode.zip
 
