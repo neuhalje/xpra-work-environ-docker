@@ -69,6 +69,8 @@ RUN DEBIAN_FRONTEND=noninteractive && \
 	    aspell \
 	    aspell-de \
 	    aspell-en \
+        libenchant-2-dev \
+        pkg-config \
 	    \
 	    neovim \
 	    \
@@ -193,8 +195,8 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 COPY install-fonts.sh /run/user/${UID}/.
 RUN  chmod 555 /run/user/${UID}/install-fonts.sh
 
+RUN chsh -s $(which zsh) ${USER_NAME}
 USER ${USER_NAME}
-
     
 ENV DISPLAY=:100
 
