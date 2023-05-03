@@ -120,8 +120,6 @@ RUN DEBIAN_FRONTEND=noninteractive && \
 	    \
 	    evince \
 	    \
-	    r-base \
-	    r-cran-rsvg \
 	    libxml2-dev \
 	    libcurl4-openssl-dev \
 	    libssl-dev \
