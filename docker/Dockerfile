@@ -136,16 +136,16 @@ RUN DEBIAN_FRONTEND=noninteractive && \
         build-essential \
         libtool-bin\
 	    \
-	    python3-pip\
-	    python3-nwdiag
-
-RUN apt-get update &&  \
-    DEBIAN_FRONTEND=noninteractive && \
-    apt-get install -y software-properties-common && \
-    apt remove --autoremove emacs emacs-common && \
-    /usr/bin/add-apt-repository ppa:neuhalje/emacs-stable && \
-     DEBIAN_FRONTEND=noninteractive apt-get install -y emacs29 && \
-    apt-get clean
+        software-properties-common \
+        \
+	    python3-pip \
+	    python3-nwdiag && \
+        \
+        apt remove --autoremove emacs emacs-common && \
+        /usr/bin/add-apt-repository ppa:neuhalje/emacs-stable && \
+        DEBIAN_FRONTEND=noninteractive apt-get install -y emacs29 && \
+        \
+        apt-get clean
 
 RUN echo "LANG=en_US.UTF-8" >> /etc/locale.conf
 
