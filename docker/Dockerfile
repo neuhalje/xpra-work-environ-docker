@@ -48,6 +48,8 @@ RUN DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y \
         gopass \
         \
+        libarchive-tools \
+        \
         rsync \
 	    apt-utils \
 	    software-properties-common \
@@ -180,6 +182,14 @@ RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificate
 # emacs pdf-tools (https://github.com/politza/pdf-tools) deps
 # org-roam (libsqlite3-dev) deps
 RUN apt-get install -y libpoppler-glib-dev libpoppler-private-dev libpng-dev zlib1g-dev libsqlite3-dev sqlite3
+
+# https://www.nerdfonts.com/font-downloads for the win!
+RUN mkdir -p  /usr/local/share/fonts && \
+    wget -q -O - https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.0/FiraCode.zip | bsdtar -xvf - --cd /usr/local/share/fonts && \
+    wget -q -O - https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.0/Hack.zip | bsdtar -xvf - --cd /usr/local/share/fonts && \
+    wget -q -O - https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.0/Overpass.zip | bsdtar -xvf - --cd /usr/local/share/fonts && \
+    wget -q -O - https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.0/Arimo.zip | bsdtar -xvf - --cd /usr/local/share/fonts && \
+    fc-cache -f -v
 
 # Signal
 #RUN wget -O- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > /usr/share/keyrings/signal-desktop-keyring.gpg && \
