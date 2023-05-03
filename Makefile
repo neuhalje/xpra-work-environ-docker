@@ -7,22 +7,22 @@ build: base-image
 
 .PHONY: base-image
 base-image:
-	${DOCKER} pull ubuntu:kinetic
+	${DOCKER} pull ubuntu:lunar
 
 run:
 	${DOCKER} run --rm -p 127.0.0.1:9876:9876 \
         --user $(id -u):$(id -g) \
-		-v ${PWD}/home:/home/user \
-		-v ~/Documents:/home/user/Documents \
-		-v ~/.doom.d:/home/user/.doom.d \
+		-v ${PWD}/home:/home/ubuntu \
+		-v ~/Documents:/home/ubuntu/Documents \
+		-v ~/.doom.d:/home/ubuntu/.doom.d \
 		-e "CERT_SAN=DNS:localhost,IP:127.0.0.1,DNS:xpra.example.com" \
 		-e XPRA_PASSWORD \
 		jensneuhalfen/xpra-work-env:${DOCKER-IMAGE-VERSION}
 shell:
 	${DOCKER} run --rm -ti \
-		-v ${PWD}/home:/home/user \
-		-v ~/Documents:/home/user/Documents \
-		-v ~/.doom.d:/home/user/.doom.d \
+		-v ${PWD}/home:/home/ubuntu \
+		-v ~/Documents:/home/ubuntu/Documents \
+		-v ~/.doom.d:/home/ubuntu/.doom.d \
 		jensneuhalfen/xpra-work-env:${DOCKER-IMAGE-VERSION} \
 		/bin/bash
 

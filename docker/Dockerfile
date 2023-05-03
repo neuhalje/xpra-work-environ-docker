@@ -1,4 +1,4 @@
-FROM ubuntu:kinetic
+FROM ubuntu:lunar
 
 # Build-time metadata as defined at http://label-schema.org
 ARG BUILD_DATE
@@ -16,14 +16,15 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV UID=1000
-ENV USER_NAME=user
+ENV USER_NAME=ubuntu
 ENV XPRA_PORT=9876
 
-# install XPRA: https://xpra.org/trac/wiki/Usage/Docker 
+# install XPRA.
+# Use BETA until lunar is fully supported
+COPY xpra.gpg /usr/share/keyrings/xpra.gpg
 RUN apt-get update && \
     apt-get install -y wget gnupg2 apt-transport-https && \
-    wget -O - https://xpra.org/gpg.asc | apt-key add - && \
-    echo "deb https://xpra.org/ kinetic main" > /etc/apt/sources.list.d/xpra.list
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/xpra.gpg] https://xpra.org/beta lunar main" > /etc/apt/sources.list.d/xpra.list
 
 #RUN apt-get update && \
 #    apt-get dist-upgrade && \
@@ -34,8 +35,7 @@ RUN apt-get update && \
 
 RUN apt-key list
     
-# Add sudo to user
-RUN adduser --disabled-password --gecos "me" --uid ${UID} ${USER_NAME}
+# Add user to sudo
 RUN apt-get update && apt-get install -y sudo
 RUN usermod -aG sudo ${USER_NAME}
 RUN echo 'ALL ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
