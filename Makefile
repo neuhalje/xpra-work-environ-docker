@@ -5,6 +5,14 @@ DOCKER=podman
 build: base-image
 	${DOCKER} build -t jensneuhalfen/xpra-work-env:${DOCKER-IMAGE-VERSION} docker
 
+# This is a manual step on purpose. Do not trust the signing key downloaded
+.PHONY: xpra-signing-key
+xpra-signing-key:
+ifneq (,$(wildcard docker/xpra.gpg))
+	rm docker/xpra.gpg
+endif
+	wget -O - https://xpra.org/gpg.asc | gpg --dearmour -o docker/xpra.gpg
+
 .PHONY: base-image
 base-image:
 	${DOCKER} pull ubuntu:lunar
