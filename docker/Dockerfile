@@ -58,6 +58,8 @@ RUN DEBIAN_FRONTEND=noninteractive && \
 	    libqt5x11extras5 \
 	    nautilus \
 	    tasksel \
+        \
+        kitty \
 	    \
 	    xpra  \
 	    xvfb  \
