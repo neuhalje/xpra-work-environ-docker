@@ -171,7 +171,7 @@ RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificate
 
 # emacs pdf-tools (https://github.com/politza/pdf-tools) deps
 # org-roam (libsqlite3-dev) deps
-RUN apt-get install -y libpoppler-glib-dev libpoppler-private-dev libpng-dev zlib1g-dev libsqlite3-dev sqlite
+RUN apt-get install -y libpoppler-glib-dev libpoppler-private-dev libpng-dev zlib1g-dev libsqlite3-dev sqlite3
 
 # Signal
 #RUN wget -O- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > /usr/share/keyrings/signal-desktop-keyring.gpg && \
