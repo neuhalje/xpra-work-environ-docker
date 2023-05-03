@@ -40,13 +40,22 @@ RUN apt-get update && apt-get install -y sudo
 RUN usermod -aG sudo ${USER_NAME}
 RUN echo 'ALL ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
+COPY gopass.gpg /usr/share/keyrings/gopass-archive-keyring.gpg
+COPY gopass.sources /etc/apt/sources.list.d/gopass.sources
+
 RUN DEBIAN_FRONTEND=noninteractive && \
     apt update  && \
     apt-get install -y \
+        gopass \
+        \
         rsync \
 	    apt-utils \
 	    software-properties-common \
 	    curl \
+        \
+        git \
+        gnupg \
+        rng-tools \
         \
 	    gdm3 \
 	    glances \
@@ -83,7 +92,6 @@ RUN DEBIAN_FRONTEND=noninteractive && \
 	    \
 	    fzf \
 	    gnuplot \
-	    gopass \
 	    graphviz \
 	    htop \
 	    pandoc \

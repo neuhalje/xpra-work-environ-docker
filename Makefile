@@ -13,6 +13,14 @@ ifneq (,$(wildcard docker/xpra.gpg))
 endif
 	wget -O - https://xpra.org/gpg.asc | gpg --dearmour -o docker/xpra.gpg
 
+# This is a manual step on purpose. Do not trust the signing key downloaded
+.PHONY: gopass-signing-key
+gopass-signing-key:
+ifneq (,$(wildcard docker/gopass.gpg))
+	rm docker/gopass.gpg
+endif
+	wget -O  docker/gopass.gpg  https://packages.gopass.pw/repos/gopass/gopass-archive-keyring.gpg
+
 .PHONY: base-image
 base-image:
 	${DOCKER} pull ubuntu:lunar
