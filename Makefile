@@ -31,6 +31,7 @@ run:
 		-v ${PWD}/home:/home/ubuntu \
 		-v ~/Documents:/home/ubuntu/Documents \
 		-v ~/.doom.d:/home/ubuntu/.doom.d \
+		-v ~/.emacs.d:/home/ubuntu/.emacs.d \
 		-e "CERT_SAN=DNS:localhost,IP:127.0.0.1,DNS:xpra.example.com" \
 		-e XPRA_PASSWORD="test" \
 		jensneuhalfen/xpra-work-env:${DOCKER-IMAGE-VERSION}
