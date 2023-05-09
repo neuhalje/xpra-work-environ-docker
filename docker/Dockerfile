@@ -51,97 +51,102 @@ RUN DEBIAN_FRONTEND=noninteractive && \
         libarchive-tools \
         \
         rsync \
-	    apt-utils \
-	    software-properties-common \
-	    curl \
+        apt-utils \
+        software-properties-common \
+        curl \
         \
         git \
         gnupg \
         rng-tools \
         \
-	    gdm3 \
-	    glances \
-	    glmark2 \
-	    linux-generic-hwe-22.04-edge \
-	    gnome-shell \
-	    gnome-session \
-	    gnome-terminal \
-	    libqt5x11extras5 \
-	    nautilus \
-	    tasksel \
+        gdm3 \
+        glances \
+        glmark2 \
+        linux-generic-hwe-22.04-edge \
+        gnome-shell \
+        gnome-session \
+        gnome-terminal \
+        libqt5x11extras5 \
+        nautilus \
+        tasksel \
         \
         kitty \
-	    \
-	    xpra  \
-	    xvfb  \
+        \
+        xpra  \
+        xvfb  \
         xsel \
         xclip \
-	    xterm  \
-	    sshfs  \
-	    \
-	    aspell \
-	    aspell-de \
-	    aspell-en \
+        xterm  \
+        sshfs  \
+        \
+        aspell \
+        aspell-de \
+        aspell-en \
         libenchant-2-dev \
         pkg-config \
-	    \
-	    neovim \
-	    \
-	    fonts-league-mono \
-	    fonts-noto-mono \
-	    fonts-arkpandora \
-	    fonts-powerline \
-	    \
-	    fzf \
-	    gnuplot \
-	    graphviz \
-	    htop \
-	    pandoc \
-	    ripgrep \
-	    silversearcher-ag \
-	    sysstat \
-	    tj3 \
-	    tmux \
-	    zsh \
-	    \
-	    dnsutils \
-	    httping \
-	    iproute2 \
-	    iputils-ping \
-	    net-tools \
-	    nmap \
-	    openssh-server \
-	    sshfs \
-	    sslscan \
-	    \
-	    texlive-xetex \
-	    texlive-lang-german \
-	    texlive-latex-extra \
-	    texlive-metapost \
-	    texlive-pictures \
-	    texlive-pstricks \
-	    texlive-science \
-	    texlive-fonts-extra \
-	    latexdiff \
-	    dvipng \
-	    biber \
-	    inkscape \
-	    latexmk \
-	    \
-	    evince \
-	    \
-	    libxml2-dev \
-	    libcurl4-openssl-dev \
-	    libssl-dev \
+        \
+        neovim \
+        \
+        fonts-league-mono \
+        fonts-noto-mono \
+        fonts-arkpandora \
+        fonts-powerline \
+        \
+        fzf \
+        gnuplot \
+        graphviz \
+        htop \
+        pandoc \
+        ripgrep \
+        silversearcher-ag \
+        sysstat \
+        tj3 \
+        tmux \
+        zsh \
+        \
+        dnsutils \
+        httping \
+        iproute2 \
+        iputils-ping \
+        net-tools \
+        nmap \
+        openssh-server \
+        sshfs \
+        sslscan \
+        \
+        texlive-xetex \
+        texlive-lang-german \
+        texlive-latex-extra \
+        texlive-metapost \
+        texlive-pictures \
+        texlive-pstricks \
+        texlive-science \
+        texlive-fonts-extra \
+        latexdiff \
+        dvipng \
+        biber \
+        inkscape \
+        latexmk \
+        \
+        evince \
+        \
+        libxml2-dev \
+        libcurl4-openssl-dev \
+        libssl-dev \
         \
         cmake \
         build-essential \
         libtool-bin\
-	    \
+        \
         software-properties-common \
         \
-	    python3-pip \
-	    python3-nwdiag && \
+        python3-pip \
+        python3-nwdiag  \
+        \
+        gimp \
+        \
+        yarn \
+        npm && \
         \
         apt remove --autoremove emacs emacs-common && \
         /usr/bin/add-apt-repository ppa:neuhalje/emacs-stable && \
