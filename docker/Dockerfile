@@ -24,7 +24,7 @@ ENV XPRA_PORT=9876
 COPY xpra.gpg /usr/share/keyrings/xpra.gpg
 RUN apt-get update && \
     apt-get install -y wget gnupg2 apt-transport-https && \
-    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/xpra.gpg] https://xpra.org/beta lunar main" > /etc/apt/sources.list.d/xpra.list
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/xpra.gpg] https://xpra.org/ lunar main" > /etc/apt/sources.list.d/xpra.list
 
 #RUN apt-get update && \
 #    apt-get dist-upgrade && \
