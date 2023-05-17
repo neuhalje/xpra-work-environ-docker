@@ -1,9 +1,13 @@
-DOCKER-IMAGE-VERSION = 0.0.13
+DOCKER-IMAGE-VERSION = 0.0.14
 DOCKER=podman
 
 .PHONY: build
 build: base-image
-	${DOCKER} build -t jensneuhalfen/xpra-work-env:${DOCKER-IMAGE-VERSION} docker
+	${DOCKER} build \
+		--build-arg VCS_REF="${git rev-parse --short HEAD}" \
+		--build-arg BUILD_DATE="${date +'%Y-%m-%d'}" \
+		-t jensneuhalfen/xpra-work-env:${DOCKER-IMAGE-VERSION} \
+		docker
 
 # This is a manual step on purpose. Do not trust the signing key downloaded
 .PHONY: xpra-signing-key
