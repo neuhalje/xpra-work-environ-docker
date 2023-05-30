@@ -92,6 +92,7 @@ RUN DEBIAN_FRONTEND=noninteractive && \
         fonts-arkpandora \
         fonts-powerline \
         \
+        bat \
         fzf \
         gnuplot \
         graphviz \
