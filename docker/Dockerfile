@@ -127,6 +127,7 @@ RUN DEBIAN_FRONTEND=noninteractive && \
         dvipng \
         biber \
         inkscape \
+        inkscape-open-symbols \
         latexmk \
         \
         evince \
