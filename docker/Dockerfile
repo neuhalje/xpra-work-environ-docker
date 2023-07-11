@@ -19,35 +19,34 @@ ENV UID=1000
 ENV USER_NAME=ubuntu
 ENV XPRA_PORT=9876
 
+RUN uname -a
+
+# This has to run before adding any non-ubuntu repos (es. ca-certificates)
+RUN DEBIAN_FRONTEND=noninteractive && \
+    apt-get update  && \
+    apt-get install -y ca-certificates wget gnupg2 apt-transport-https 
+
 # install XPRA.
-# Use BETA until lunar is fully supported
 COPY xpra.gpg /usr/share/keyrings/xpra.gpg
-RUN apt-get update && \
-    apt-get install -y wget gnupg2 apt-transport-https && \
-    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/xpra.gpg] https://xpra.org/ lunar main" > /etc/apt/sources.list.d/xpra.list
+RUN echo "deb [arch=amd64 signed-by=/usr/share/keyrings/xpra.gpg] https://xpra.org/ lunar main" > /etc/apt/sources.list.d/xpra.list
 
-#RUN apt-get update && \
-#    apt-get dist-upgrade && \
-#    apt-get install -y \
-    # && \
-    #apt-get clean && \ 
-    #rm -rf /var/lib/apt/lists/*
-
-RUN apt-key list
-    
-# Add user to sudo
-RUN apt-get update && apt-get install -y sudo
-RUN usermod -aG sudo ${USER_NAME}
-RUN echo 'ALL ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
+# gopass
 COPY gopass.gpg /usr/share/keyrings/gopass-archive-keyring.gpg
 COPY gopass.sources /etc/apt/sources.list.d/gopass.sources
 
 RUN DEBIAN_FRONTEND=noninteractive && \
-    apt update  && \
+    apt-get update  && \
+    apt-get dist-upgrade -y  && \
+    apt-get install -y qemu-user-static && \
+    apt-get install -y sudo && \
+    usermod -aG sudo ${USER_NAME} 
+
+RUN DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y \
-        gopass \
-        \
+        gopass 
+
+RUN DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y \
         libarchive-tools \
         \
         rsync \
@@ -57,26 +56,27 @@ RUN DEBIAN_FRONTEND=noninteractive && \
         \
         git \
         gnupg \
-        rng-tools \
-        \
+        rng-tools 
+
+RUN DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y \
         gdm3 \
         glances \
-        glmark2 \
-        linux-generic-hwe-22.04-edge \
-        gnome-shell \
-        gnome-session \
-        gnome-terminal \
         libqt5x11extras5 \
         nautilus \
         tasksel \
         \
-        kitty \
-        \
+        kitty
+
+RUN DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y \
         xpra  \
         xvfb  \
         xsel \
-        xclip \
-        xterm  \
+        xclip
+
+RUN DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y \
         sshfs  \
         \
         aspell \
@@ -85,7 +85,18 @@ RUN DEBIAN_FRONTEND=noninteractive && \
         libenchant-2-dev \
         pkg-config \
         \
+        libxml2-dev \
+        libcurl4-openssl-dev \
+        libssl-dev \
+        \
+        cmake \
+        build-essential \
+        libtool-bin\
+        \
+        software-properties-common \
+        \
         neovim \
+        krita \
         \
         fonts-league-mono \
         fonts-noto-mono \
@@ -113,37 +124,21 @@ RUN DEBIAN_FRONTEND=noninteractive && \
         nmap \
         openssh-server \
         sshfs \
-        sslscan \
-        \
-        texlive-xetex \
-        texlive-lang-german \
-        texlive-latex-extra \
-        texlive-metapost \
-        texlive-pictures \
-        texlive-pstricks \
-        texlive-science \
-        texlive-fonts-extra \
-        latexdiff \
-        dvipng \
-        biber \
+        sslscan
+
+RUN DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y \
         inkscape \
-        inkscape-open-symbols \
-        latexmk \
-        \
-        evince \
-        \
-        libxml2-dev \
-        libcurl4-openssl-dev \
-        libssl-dev \
-        \
-        cmake \
-        build-essential \
-        libtool-bin\
-        \
-        software-properties-common \
-        \
+        inkscape-open-symbols 
+
+RUN DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y \
         python3-pip \
-        python3-nwdiag  \
+        python3-nwdiag 
+
+RUN DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y \
+        evince \
         \
         gimp \
         \
@@ -152,12 +147,40 @@ RUN DEBIAN_FRONTEND=noninteractive && \
         \
         apt remove --autoremove emacs emacs-common && \
         /usr/bin/add-apt-repository ppa:neuhalje/emacs-stable && \
-        DEBIAN_FRONTEND=noninteractive apt-get install -y emacs29 && \
-        \
-        apt-get clean
+        DEBIAN_FRONTEND=noninteractive apt-get install -y emacs29
 
+
+RUN DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y \
+        default-jre-headless
+
+# this fails to install on podman/M1
+# RUN DEBIAN_FRONTEND=noninteractive && \
+#     apt-get install -y \
+#         latexmk  \
+#         tex-common
+# 
+# RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
+#         texlive-xetex 
+# 
+# RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
+#         texlive-lang-german \
+#         texlive-latex-extra \
+#         texlive-metapost \
+#         texlive-pictures \
+#         texlive-pstricks \
+#         texlive-science \
+#         texlive-fonts-extra 
+# 
+# RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
+#         latexdiff \
+#         dvipng \
+#         biber 
+
+RUN apt-get clean
 RUN echo "LANG=en_US.UTF-8" >> /etc/locale.conf
 
+RUN echo 'ALL ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 RUN apt-get install -y language-pack-en-base && \ 
     locale-gen en_US.UTF-8 && \ 
@@ -203,6 +226,12 @@ RUN mkdir -p  /usr/local/share/fonts && \
 #          echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt xenial main' > /etc/apt/sources.list.d/signal-xenial.list && \
 #          apt update && sudo apt install signal-desktop
 
+
+########################
+# Babashka
+COPY babashka-installer /tmp/babashka-installer 
+RUN  /tmp/babashka-installer 
+
 #######################################################################
 ## User Configuration
 # Sudo configuration
@@ -217,20 +246,20 @@ RUN usermod -aG sudo ${USER_NAME}
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # Install various fonts
-COPY install-fonts.sh /run/user/${UID}/.
-RUN  chmod 555 /run/user/${UID}/install-fonts.sh
+COPY install-fonts.sh /tmp/.
+RUN  chmod 555 /tmp/install-fonts.sh
 
 RUN chsh -s $(which zsh) ${USER_NAME}
 USER ${USER_NAME}
+RUN  /tmp/install-fonts.sh
     
 ENV DISPLAY=:100
 
 WORKDIR /home/${USER_NAME}
-COPY README.md /run/user/${UID}/.
+COPY README.md /
 
-RUN  /run/user/${UID}/install-fonts.sh
 
 EXPOSE ${XPRA_PORT}
 
-COPY start-xpra.sh /run/${UID}/
-CMD /run/${UID}/start-xpra.sh ${XPRA_PORT}
+COPY start-xpra.sh /
+CMD /start-xpra.sh ${XPRA_PORT}

@@ -120,3 +120,70 @@ KEY_FILE=${CERT_STORAGE}/key.pem
 ```
 
 The easiest way to provide them is to mount a volume there.  If this is not done, then a self signed certificate is generated.
+
+
+# HowTo
+
+## Building on MacOs with M1/M2 processors
+
+When 
+Some packages need qemu-user-static installed on the host system, e.g. python3
+
+
+```text
+Setting up python3 (3.11.2-1) ...
+Traceback (most recent call last):
+  File "/usr/bin/py3compile", line 323, in <module>
+    main()
+  File "/usr/bin/py3compile", line 294, in main
+    compile(files, compile_versions, options.force,
+  File "/usr/bin/py3compile", line 187, in compile
+    cfn = interpreter.cache_file(fn, version)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/share/python3/debpython/interpreter.py", line 212, in cache_file
+    (fname[:-3], self.magic_tag(version), last_char))
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/share/python3/debpython/interpreter.py", line 246, in magic_tag
+    return self._execute('import imp; print(imp.get_tag())', version)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/share/python3/debpython/interpreter.py", line 359, in _execute
+    raise Exception('{} failed with status code {}'.format(command, output['returncode']))
+Exception: ('python3.11', '-c', 'import imp; print(imp.get_tag())') failed with status code -11
+Error in sys.excepthook:
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/apport_python_hook.py", line 105, in apport_excepthook
+    pr.add_proc_info(extraenv=["PYTHONPATH", "PYTHONHOME"])
+  File "/usr/lib/python3/dist-packages/apport/report.py", line 761, in add_proc_info
+    raise ValueError("%s does not exist" % self["ExecutablePath"])
+ValueError: /usr/bin/qemu-x86_64-static does not exist
+
+Original exception was:
+Traceback (most recent call last):
+  File "/usr/bin/py3compile", line 323, in <module>
+    main()
+  File "/usr/bin/py3compile", line 294, in main
+    compile(files, compile_versions, options.force,
+  File "/usr/bin/py3compile", line 187, in compile
+    cfn = interpreter.cache_file(fn, version)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/share/python3/debpython/interpreter.py", line 212, in cache_file
+    (fname[:-3], self.magic_tag(version), last_char))
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/share/python3/debpython/interpreter.py", line 246, in magic_tag
+    return self._execute('import imp; print(imp.get_tag())', version)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/share/python3/debpython/interpreter.py", line 359, in _execute
+    raise Exception('{} failed with status code {}'.format(command, output['returncode']))
+Exception: ('python3.11', '-c', 'import imp; print(imp.get_tag())') failed with status code -11
+error running python rtupdate hook ibus
+dpkg: error processing package python3 (--configure):
+ installed python3 package post-installation script subprocess returned error exit status 4
+
+```
+
+Install `qemu-user-static`
+
+```sh
+podman machine ssh sudo rpm-ostree install qemu-user-static
+podman machine ssh sudo systemctl reboot
+```

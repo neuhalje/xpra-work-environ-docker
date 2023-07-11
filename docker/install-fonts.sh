@@ -18,21 +18,21 @@ fi
 
 mkdir /tmp/nej-fonts
 
-for f in Roboto "Noto%20Sans" "Open%20Sans" "Source%20Sans%20Pro" "Source%20Code%20Pro" "Roboto%20Mono" "Roboto%20Condensed" "Roboto" "Fira%20Sans" "Fira%20Sans%20Condensed" "Fira%20Mono" "Fira%20Code"; do
-        wget -O fonts.zip "https://fonts.google.com/download?family=${f}"
+for f in Roboto "Noto%20Sans" "Open%20Sans"  "Source%20Code%20Pro" "Roboto%20Mono" "Roboto%20Condensed" "Roboto" "Fira%20Sans" "Fira%20Sans%20Condensed" "Fira%20Mono" "Fira%20Code"; do
+        wget -O /tmp/fonts.zip "https://fonts.google.com/download?family=${f}"
         # remove info files in root folders
-        sudo find /tmp/nej-fonts -maxdepth 1 -type f -delete
-        sudo unzip fonts.zip -d /tmp/nej-fonts
-        rm fonts.zip
+        find /tmp/nej-fonts -maxdepth 1 -type f -delete
+        unzip /tmp/fonts.zip -d /tmp/nej-fonts
+        rm /tmp/fonts.zip
 done
 
 # https://github.com/tonsky/FiraCode/
-wget -O firacode.zip "https://github.com/tonsky/FiraCode/releases/download/6.2/Fira_Code_v6.2.zip"
-sudo find /tmp/nej-fonts -maxdepth 1 -type f -delete
-sudo unzip firacode.zip -d /tmp/nej-fonts
-rm firacode.zip
+wget -O /tmp/firacode.zip "https://github.com/tonsky/FiraCode/releases/download/6.2/Fira_Code_v6.2.zip"
+find /tmp/nej-fonts -maxdepth 1 -type f -delete
+unzip /tmp/firacode.zip -d /tmp/nej-fonts
+rm /tmp/firacode.zip
 
-sudo find /tmp/nej-fonts -name \*.ttf -o -name \*.otf -exec mv \{\} ${DEST_DIR} \;
+find /tmp/nej-fonts -name \*.ttf -o -name \*.otf -exec mv \{\} ${DEST_DIR} \;
 
 # sudo wget https://github.com/mrbvrz/segoe-ui/raw/master/font/segoeui.ttf?raw=true -O "$DEST_DIR"/segoeui.ttf     # regular
 # sudo wget https://github.com/mrbvrz/segoe-ui/raw/master/font/segoeuib.ttf?raw=true -O "$DEST_DIR"/segoeuib.ttf   # bold
