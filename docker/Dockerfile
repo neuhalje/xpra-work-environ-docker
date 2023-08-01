@@ -96,12 +96,6 @@ RUN DEBIAN_FRONTEND=noninteractive && \
         software-properties-common \
         \
         neovim \
-        krita \
-        \
-        fonts-league-mono \
-        fonts-noto-mono \
-        fonts-arkpandora \
-        fonts-powerline \
         \
         bat \
         fzf \
@@ -126,10 +120,22 @@ RUN DEBIAN_FRONTEND=noninteractive && \
         sshfs \
         sslscan
 
+
+# use latest stable inkscape
+RUN DEBIAN_FRONTEND=noninteractive && \
+    /usr/bin/add-apt-repository ppa:inkscape.dev/stable && \
+    apt-get update && \
+    apt-get install -y \
+        inkscape
+
 RUN DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y \
-        inkscape \
-        inkscape-open-symbols 
+        krita \
+        \
+        fonts-league-mono \
+        fonts-noto-mono \
+        fonts-arkpandora \
+        fonts-powerline
 
 RUN DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y \

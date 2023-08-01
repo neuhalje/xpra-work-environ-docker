@@ -1,4 +1,4 @@
-DOCKER-IMAGE-VERSION = 0.0.16
+DOCKER-IMAGE-VERSION = 0.0.17
 DOCKER=podman
 
 .PHONY: build
@@ -58,6 +58,12 @@ shell:
 		-v ${PWD}/home:/home/ubuntu \
 		-v ~/Documents:/home/ubuntu/Documents \
 		-v ~/.doom.d:/home/ubuntu/.doom.d \
+		jensneuhalfen/xpra-work-env:${DOCKER-IMAGE-VERSION} \
+		/bin/bash
+
+no-mount-shell:
+	${DOCKER} run --rm -ti \
+                --platform linux/amd64 \
 		jensneuhalfen/xpra-work-env:${DOCKER-IMAGE-VERSION} \
 		/bin/bash
 
