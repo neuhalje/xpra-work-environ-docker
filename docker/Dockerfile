@@ -21,25 +21,35 @@ ENV XPRA_PORT=9876
 
 RUN uname -a
 
+RUN DEBIAN_FRONTEND=noninteractive && \
+    apt-get update  && \
+    apt-get install -y \
+        ca-certificates \
+        wget \
+        gnupg2 \
+        apt-transport-https
+
+# install XPRA.
+# as of today (2023-11-1) there are no mantic packages available, so fallback to lunar
+# @future me: https://xpra.org/dists/mantic/main/binary-amd64/
+COPY --chmod=444 xpra.gpg /usr/share/keyrings/xpra.gpg
+COPY --chmod=444 xpra.list /etc/apt/sources.list.d/xpra.list
+
+# gopass
+COPY --chmod=444 gopass.gpg /usr/share/keyrings/gopass-archive-keyring.gpg
+COPY --chmod=444 gopass.list /etc/apt/sources.list.d/gopass.list
+
 # This has to run before adding any non-ubuntu repos (es. ca-certificates)
 RUN DEBIAN_FRONTEND=noninteractive && \
     apt-get update  && \
-    apt-get install -y ca-certificates wget gnupg2 apt-transport-https 
-
-# install XPRA.
-COPY xpra.gpg /usr/share/keyrings/xpra.gpg
-RUN echo "deb [arch=amd64 signed-by=/usr/share/keyrings/xpra.gpg] https://xpra.org/ lunar main" > /etc/apt/sources.list.d/xpra.list
-
-# gopass
-COPY gopass.gpg /usr/share/keyrings/gopass-archive-keyring.gpg
-COPY gopass.sources /etc/apt/sources.list.d/gopass.sources
+    apt-get dist-upgrade -y
 
 RUN DEBIAN_FRONTEND=noninteractive && \
-    apt-get update  && \
-    apt-get dist-upgrade -y  && \
-    apt-get install -y qemu-user-static && \
     apt-get install -y sudo && \
     usermod -aG sudo ${USER_NAME} 
+
+    #TODO Needed that for something??? libglib2.0-0 libxext6 libsm6 libxrender1 
+
 
 RUN DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y \
@@ -47,33 +57,31 @@ RUN DEBIAN_FRONTEND=noninteractive && \
 
 RUN DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y \
+        python3-pip \
+        python3-jeepney \
+        python3-apt
+
+RUN DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y \
         libarchive-tools \
         \
         rsync \
         apt-utils \
-        software-properties-common \
         curl \
         \
         git \
         gnupg \
-        rng-tools 
+        rng-tools  \
+        wget \
+        bzip2 \
+        ca-certificates \
+        screen \
+        git \
+        rlwrap
 
 RUN DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y \
-        gdm3 \
-        glances \
-        libqt5x11extras5 \
-        nautilus \
-        tasksel \
-        \
-        kitty
-
-RUN DEBIAN_FRONTEND=noninteractive && \
-    apt-get install -y \
-        xpra  \
-        xvfb  \
-        xsel \
-        xclip
+        software-properties-common
 
 RUN DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y \
@@ -92,8 +100,6 @@ RUN DEBIAN_FRONTEND=noninteractive && \
         cmake \
         build-essential \
         libtool-bin\
-        \
-        software-properties-common \
         \
         neovim \
         \
@@ -121,12 +127,47 @@ RUN DEBIAN_FRONTEND=noninteractive && \
         sslscan
 
 
-# use latest stable inkscape
 RUN DEBIAN_FRONTEND=noninteractive && \
-    /usr/bin/add-apt-repository ppa:inkscape.dev/stable && \
-    apt-get update && \
     apt-get install -y \
-        inkscape
+        python3-nwdiag  
+        #python3-more-itertools
+
+RUN DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y \
+        yarn \
+        npm
+
+RUN DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y \
+       openjdk-11-jdk \
+       default-jre-headless
+
+
+RUN DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y qemu-user-static
+
+RUN DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y \
+        xpra-server  \
+        xvfb  \
+        xsel \
+        xclip
+
+# deps for inkscape that it cannot resolve otherwise
+# libpoppler126 somehow is missing from the central repo
+#RUN DEBIAN_FRONTEND=noninteractive && \
+#    wget http://launchpadlibrarian.net/649777340/libpoppler126_22.12.0-2ubuntu1_amd64.deb  && \
+#    dpkg -i libpoppler126_22.12.0-2ubuntu1_amd64.deb || apt-get -f install ;   \
+#    rm libpoppler126_22.12.0-2ubuntu1_amd64.deb
+
+# use latest stable inkscape
+#RUN DEBIAN_FRONTEND=noninteractive && \
+#    /usr/bin/add-apt-repository ppa:inkscape.dev/stable && \
+#    apt-get update && \
+#    apt-get install -y \
+#        inkscape
+
+COPY --chmod=555 tmp/Inkscape.AppImage /opt/.
 
 RUN DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y \
@@ -139,49 +180,82 @@ RUN DEBIAN_FRONTEND=noninteractive && \
 
 RUN DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y \
-        python3-pip \
-        python3-nwdiag 
-
-RUN DEBIAN_FRONTEND=noninteractive && \
-    apt-get install -y \
         evince \
         \
-        gimp \
-        \
-        yarn \
-        npm && \
-        \
-        apt remove --autoremove emacs emacs-common && \
-        /usr/bin/add-apt-repository ppa:neuhalje/emacs-stable && \
-        DEBIAN_FRONTEND=noninteractive apt-get install -y emacs29
-
+        gimp 
 
 RUN DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y \
-        default-jre-headless
+        kitty
+
 
 # this fails to install on podman/M1
-# RUN DEBIAN_FRONTEND=noninteractive && \
-#     apt-get install -y \
-#         latexmk  \
-#         tex-common
+RUN DEBIAN_FRONTEND=noninteractive && \
+  apt-get install -y \
+      latexmk  \
+      tex-common
 # 
-# RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
-#         texlive-xetex 
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
+         texlive-xetex 
 # 
-# RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
-#         texlive-lang-german \
-#         texlive-latex-extra \
-#         texlive-metapost \
-#         texlive-pictures \
-#         texlive-pstricks \
-#         texlive-science \
-#         texlive-fonts-extra 
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
+         texlive-lang-german \
+         texlive-latex-extra
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
+         texlive-pictures
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
+         texlive-science \
+         texlive-fonts-extra 
 # 
-# RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
-#         latexdiff \
-#         dvipng \
-#         biber 
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
+         latexdiff \
+         dvipng \
+         biber 
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
+         texlive-luatex
+
+#RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
+#         texlive-pstricks
+#
+#RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
+#         texlive-metapost
+
+# Install Clojure
+RUN curl -L -O https://github.com/clojure/brew-install/releases/download/1.11.1.1413/linux-install.sh && \
+    chmod +x linux-install.sh && \
+    ./linux-install.sh && \
+    rm ./linux-install.sh
+
+# Install LSP: core-dumps
+#RUN npm i -g \
+#             vscode-langservers-extracted 
+
+
+# Install LSP
+RUN \
+#    npm i -g \
+#             graphql-language-service-cli && \
+    npm i -g \
+             yaml-language-server 
+RUN \
+    npm i -g \
+             bash-language-server   && \
+    npm i -g \
+             unified-language-server 
+
+
+
+
+RUN DEBIAN_FRONTEND=noninteractive && \
+    apt-get remove --autoremove emacs emacs-common && \
+    /usr/bin/add-apt-repository ppa:neuhalje/emacs-stable && \
+    apt-get update && \
+    apt-get install -y emacs29
+
+
 
 RUN apt-get clean
 RUN echo "LANG=en_US.UTF-8" >> /etc/locale.conf

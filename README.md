@@ -9,6 +9,11 @@ This is my personal container for working with a standard environment:
 - Optionally encrypted home directory (this is mounted as a volume)
 - Easy authentication (for a single user...)
 
+## CAVE CARNEM
+**This is a work of art, cargo-cult, and black magic.** Getting this to build on a M1-Mac with podman required lots of arbitrary cutting and slicing of package installs until it somehow worked. Especially python packages are prone to puke.
+
+Running the build will fail quite often. Retry is key to success here.
+
 # Attaching
 
 ## Authentication
@@ -126,7 +131,6 @@ The easiest way to provide them is to mount a volume there.  If this is not done
 
 ## Building on MacOs with M1/M2 processors
 
-When 
 Some packages need qemu-user-static installed on the host system, e.g. python3
 
 

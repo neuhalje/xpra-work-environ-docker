@@ -13,7 +13,7 @@ USE_TLS=0
 # fix Brotli compression error
 export XPRA_MIN_CLIPBOARD_COMPRESS_SIZE=99999999
 
-XPRA_PORT=$1
+XPRA_PORT=${1:-9876}
 
 if [ -z "${XPRA_PASSWORD}" ]; then
     XPRA_PASSWORD=${XPRA_PASSWORD:-$(openssl rand -base64 32)}
@@ -47,9 +47,8 @@ generate_certificates() {
 start_xpra_tls() {
     xpra start \
         --attach=no \
-        --auth=fail \
         --bell=no \
-        --bind-ssl=0.0.0.0:${XPRA_PORT},auth=env:name=XPRA_PASSWORD \
+        --bind-ssl=0.0.0.0:${XPRA_PORT} \
         --clipboard-direction=both \
         --clipboard=auto \
         --daemon=no \
@@ -59,7 +58,7 @@ start_xpra_tls() {
         --mdns=no \
         --notifications=no \
         --pulseaudio=no \
-        --ssl-auth=env \
+        --ssl-auth=env:name=XPRA_PASSWORD \
         --ssl-cert="${CERT_FILE}" \
         --ssl-ciphers=ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384 \
         --ssl-key="${KEY_FILE}" \
@@ -71,11 +70,12 @@ start_xpra_tls() {
 }
 
 start_xpra_tcp() {
+   #     --bind-tcp=0.0.0.0:${XPRA_PORT},auth=env 
     xpra start \
-        --auth=env \
         --attach=no \
         --bell=no \
-        --bind-tcp=0.0.0.0:${XPRA_PORT},auth=env:name=XPRA_PASSWORD \
+        --bind-tcp=0.0.0.0:9876 \
+        --tcp-auth=env \
         --clipboard-direction=both \
         --clipboard=auto \
         --daemon=no \
@@ -110,6 +110,8 @@ if [ $USE_TLS -gt 0 ]; then
 
     start_xpra_tls
 else
+    echo 2
+
     printf 'Now run the client:
 
     xpra attach tcp:localhost:%d \\
