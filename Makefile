@@ -1,4 +1,4 @@
-DOCKER-IMAGE-VERSION = 0.0.19
+DOCKER-IMAGE-VERSION = 0.0.20
 DOCKER=podman
 
 .PHONY: build
@@ -82,7 +82,7 @@ shell:
 no-mount-shell:
 	${DOCKER} run --rm -ti \
                 --platform linux/amd64 \
-		jensneuhalfen/xpra-work-env:latest \
+		jensneuhalfen/xpra-work-env:${DOCKER-IMAGE-VERSION} \
 		/bin/bash
 
 .PHONY: push

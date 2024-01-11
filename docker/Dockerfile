@@ -147,27 +147,16 @@ RUN DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y qemu-user-static
 
 RUN DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y libxext6 libsm6 libxrender1 libfuse2
+    #apt-get install -y libglib2.0 libxext6 libsm6 libxrender1 libfuse2
+
+RUN DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y \
         xpra-server  \
+        xpra-client  \
         xvfb  \
         xsel \
         xclip
-
-# deps for inkscape that it cannot resolve otherwise
-# libpoppler126 somehow is missing from the central repo
-#RUN DEBIAN_FRONTEND=noninteractive && \
-#    wget http://launchpadlibrarian.net/649777340/libpoppler126_22.12.0-2ubuntu1_amd64.deb  && \
-#    dpkg -i libpoppler126_22.12.0-2ubuntu1_amd64.deb || apt-get -f install ;   \
-#    rm libpoppler126_22.12.0-2ubuntu1_amd64.deb
-
-# use latest stable inkscape
-#RUN DEBIAN_FRONTEND=noninteractive && \
-#    /usr/bin/add-apt-repository ppa:inkscape.dev/stable && \
-#    apt-get update && \
-#    apt-get install -y \
-#        inkscape
-
-COPY --chmod=555 tmp/Inkscape.AppImage /opt/.
 
 RUN DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y \
@@ -330,7 +319,37 @@ COPY install-fonts.sh /tmp/.
 RUN  chmod 555 /tmp/install-fonts.sh
 
 RUN chsh -s $(which zsh) ${USER_NAME}
+
+# Inkscape
+#
+# deps for inkscape that it cannot resolve otherwise
+# libpoppler126 somehow is missing from the central repo
+#RUN DEBIAN_FRONTEND=noninteractive && \
+#    wget http://launchpadlibrarian.net/649777340/libpoppler126_22.12.0-2ubuntu1_amd64.deb  && \
+#    dpkg -i libpoppler126_22.12.0-2ubuntu1_amd64.deb || apt-get -f install ;   \
+#    rm libpoppler126_22.12.0-2ubuntu1_amd64.deb
+
+# use latest stable inkscape
+#RUN DEBIAN_FRONTEND=noninteractive && \
+#    /usr/bin/add-apt-repository ppa:inkscape.dev/stable && \
+#    apt-get update && \
+#    apt-get install -y \
+#        inkscape
+
+
+# RUN fails with "/tmp/Inkscape.AppImage: Exec format error" on macos
+#COPY --chmod=555 tmp/Inkscape.AppImage /opt/.
+#RUN cd /opt && \
+#     echo "/opt/Inkscape.AppImage --appimage-extract && mv /tmp/squashfs-root /opt/inkscape " \
+#     /tmp/Inkscape.AppImage --appimage-extract && \
+#      && \
+#     mkdir /opt/bin && \
+#     ln -s /opt/inkscape/AppRun /opt/bin/inkscape  && \
+#     rm Inkscape.AppImage
+
+
 USER ${USER_NAME}
+
 RUN  /tmp/install-fonts.sh
     
 ENV DISPLAY=:100
